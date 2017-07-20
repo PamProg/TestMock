@@ -27,7 +27,7 @@ public class AppTest {
 	@Rule public final SystemOutRule systemOutRule = new SystemOutRule().enableLog();
 	private App app;
 	private CalculService calculService;
-	@Rule private final TextFromStandardInputStream systemInMock = emptyStandardInputStream();
+	@Rule public final TextFromStandardInputStream systemInMock = emptyStandardInputStream();
 	
 
 	@Before
@@ -77,12 +77,56 @@ public class AppTest {
 	
 	@Test
 	public void testDemarrerFin() throws Exception {
-		LOG.info("Etant donné l'utilisateur inscrivant la chaine 'fin");
+		LOG.info("Etant donné l'utilisateur inscrivant la chaine 'fin'");
 		systemInMock.provideLines("fin");
 		
 		LOG.info("Lorsque la méthode demarrer est invoquée");
 		this.app.demarrer();
 		
+		assertThat(systemOutRule.getLog()).contains("Aurevoir :-(");
+		
+	}
+	
+	@Test
+	public void testDemarrerExpressionPuisFin() throws Exception {
+		LOG.info("Etant donné l'utilisateur inscrivant la chaine '1+2' puis 'fin'");
+		systemInMock.provideLines("1+2", "fin");
+		when(calculService.additionner("1+2")).thenReturn(3);
+		
+		LOG.info("Lorsque la méthode demarrer est invoquée");
+		this.app.demarrer();
+		
+		assertThat(systemOutRule.getLog()).contains("1+2=3");
+		assertThat(systemOutRule.getLog()).contains("Aurevoir :-(");
+		
+	}
+	
+	@Test
+	public void testDemarrerExpressionInvalidePuisFin() throws Exception {
+		LOG.info("Etant donné l'utilisateur inscrivant la chaine '1+2' puis 'fin'");
+		systemInMock.provideLines("AAAA", "fin");
+		when(calculService.additionner("AAAA")).thenThrow(new CalculException());
+		
+		LOG.info("Lorsque la méthode demarrer est invoquée");
+		this.app.demarrer();
+		
+		assertThat(systemOutRule.getLog()).contains("L'expression AAAA est invalide");
+		assertThat(systemOutRule.getLog()).contains("Aurevoir :-(");
+		
+	}
+	
+	@Test
+	public void testDemarrerExpressionMultiplePuisFin() throws Exception {
+		LOG.info("Etant donné l'utilisateur inscrivant la chaine '1+2' puis 'fin'");
+		systemInMock.provideLines("1+2", "30+2", "fin");
+		when(calculService.additionner("1+2")).thenReturn(3);
+		when(calculService.additionner("30+2")).thenReturn(32);
+		
+		LOG.info("Lorsque la méthode demarrer est invoquée");
+		this.app.demarrer();
+		
+		assertThat(systemOutRule.getLog()).contains("1+2=3");
+		assertThat(systemOutRule.getLog()).contains("30+2=32");
 		assertThat(systemOutRule.getLog()).contains("Aurevoir :-(");
 		
 	}

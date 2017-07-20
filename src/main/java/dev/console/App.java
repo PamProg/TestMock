@@ -23,45 +23,34 @@ public class App {
 		LOG.info("**** Application Calculatrice ****");
 	}
 
+
 	public void demarrer() {
 		afficherTitre();
-		LOG.info("Veuillez entrer une expression");
-		String input = scanner.next();
+		String input; 
 		
-		if("fin".equals(input)) {
-			LOG.info("Aurevoir :-(");
-		} else {
-			evaluer(input);
-		}
+		do {
+			LOG.info("Veuillez entrer une expression");
+			input = scanner.next();
+			
+			if(!"fin".equals(input)) {
+				evaluer(input);
+			}
+			
+		} while (!"fin".equals(input));
+		
+		LOG.info("Aurevoir :-(");
 		
 	}
-
-//	public void demarrer() {
-//		afficherTitre();
-//		LOG.info("Veuillez entrer une expression");
-//		
-//		String input; 
-//		
-//		do {
-//			input = scanner.next();
-//			
-//			evaluer(input);
-//			
-//		} while (!"fin".equals(input));
-//		
-//		LOG.info("Aurevoir :-(");
-//		
-//	}
 	
 	protected void evaluer(String expression) {
 		
 		int somme = 0;
 		try {
 			somme = calculatrice.additionner(expression);
+			LOG.info("{}={}", expression, somme);
 		} catch (CalculException e) {
 			LOG.info("L'expression {} est invalide", expression);
 		}
 		
-		LOG.info("{}={}", expression, somme);
 	}
 }

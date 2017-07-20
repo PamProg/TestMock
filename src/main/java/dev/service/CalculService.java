@@ -22,7 +22,7 @@ public class CalculService {
 			stream = Stream.of(expression.split("\\+"));
 			somme = stream.mapToInt(x -> Integer.parseInt(x)).sum();
 		} catch (Exception e) {
-			LOG.debug("L'expression {} est invalide", expression);
+//			LOG.debug("L'expression {} est invalide", expression);
 			throw new CalculException("Erreur d'expression : expression invalide", e);
 		}
 		
